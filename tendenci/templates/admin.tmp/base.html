@@ -1,0 +1,207 @@
+{% load firstof from future %}
+{% load i18n staticfiles admin_static base_tags log %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+
+    {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}');
+    </script>
+    <!-- End Google Analytics -->
+    {% endif %}
+
+    <!-- meta -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    {% block full_meta_description %}<meta name="description" content="{% block meta_description %}{% endblock %}" />{% endblock %}
+    {% block full_meta_keywords %}<meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />{% endblock %}
+    <meta name="generator" content="Tendenci" />
+    {% block meta_canonical_url %}{% endblock %}
+    {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+    <!-- end meta -->
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/">
+    <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME|safe }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
+
+    <!-- stylesheets -->
+    <link href="{% static "bootstrap4/css/bootstrap.min.css" %}" rel="stylesheet" type="text/css">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static "admin/css/overrides.css" %}" />
+    <link href="{% static "admin/css/base.css" %}" rel="stylesheet" type="text/css" /> -->
+    {% block extrastyle %}{% endblock %}
+    <style type="text/css">
+    body {
+        padding-top: 4.5rem;
+    }
+    </style>
+    <!-- end stylesheets -->
+
+    <!-- javascript -->
+    {% block jquery_script %}<script {% value_from_settings JQUERY_URL %}></script>{% endblock jquery_script %}
+    <script src="{% static "bootstrap4/js/bootstrap.min.js" %}"></script>
+    <script defer src="{% static "font-awesome/fontawesome-free-5.0.8/svg-with-js/js/fontawesome-all.js" %}"></script>
+
+    <!-- ADH TODO - what does this do? -->
+    <script type="text/javascript">
+    window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
+    window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";
+    (function($) {
+        $(document).ready(function() {
+            $('input[type="submit"]').addClass('btn');
+        });
+    }(JQuery));
+    </script>
+    <!-- end javascript -->
+
+    {% block extra_head %}{% endblock %}
+
+</head>
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+
+    <!-- Container -->
+    <div class="container">
+        {% if not is_popup %}
+        <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                {% block branding %}{% endblock %}
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#headerNavbarCollapse" aria-controls="headerNavbarCollapse" aria-expanded="false" aria-label="Toggle Header Navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="headerNavbarCollapse" class="collapse navbar-collapse">
+                    <div class="navbar-nav ml-auto">
+                        {% if user.is_active and user.is_staff %}
+                        <div class="nav-item dropdown">
+                            <a id="userDropdownMenuLink" class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% trans 'Welcome,' %} <strong>{% filter force_escape %}{% firstof user.get_short_name user.get_username user.first_name user.username %}{% endfilter %}</strong>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="userDropdownMenuLink">
+                                {% if user.has_usable_password %}
+                                <a class="dropdown-item" href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
+                                {% endif %}
+                                <a class="dropdown-item" href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% block languages %}
+                        <!-- ADH TODO - language menu - the one that was here used to use the django-admin-bootstrapped template - is il8n enabled? -->
+                        {% if i18n_is_set %}
+                        <div class="nav-item dropdown">
+                            {% get_language_info for LANGUAGE_CODE as current %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_language_info_list for LANGUAGES as languages %}
+                            <a id="languageDropdownMenuLink" class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-foo={{ current.code }}>
+                                {{ current.name_local|capfirst }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="languageDropdownMenuLink">
+                            {% for language in languages %}
+                                {% if language.code != current.code %}
+                                <div class="dropdown-item">
+                                    <form name="setLang{{language.code}}" action="{% url 'set_language' %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="language" value="{{ language.code }}" />
+                                        <a class="dab-update-lang" href="#" onclick="document.setLang{{ language.code }}.submit();return false;">{{ language.name_local|capfirst }}</a>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endblock languages %}
+                        {% block logs %}
+                        <div class="nav-item dropdown ">
+                            <a id="recentActionsDropdownMenuLink" class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% trans 'Recent Actions' %}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="recentActionsDropdownMenuLink">
+                                {% get_admin_log 10 as admin_log for_user user %}
+                                {% if not admin_log %}
+                                <a class="dropdown-item">{% trans 'None available' %}</a>
+                                {% else %}
+                                {% for entry in admin_log %}
+                                {% if entry.is_deletion or not entry.get_admin_url %}
+                                <a class="dropdown-item"><i class="fas fa-times"></i> {{ entry.object_repr }}
+                                {% else %}
+                                <a class="dropdown-item" href="{{ entry.get_admin_url }}"><i class="fas fa-pencil-alt"></i> {{ entry.object_repr }}
+                                {% endif %}
+                                {% if entry.content_type %}
+                                &nbsp;<span class="text-muted">({% filter capfirst %}{{ entry.content_type }}{% endfilter %})</span></a>
+                                {% else %}
+                                &nbsp;<span class="text-muted">({% trans 'Unknown content' %})</span></a>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endblock %}
+                        {% block userlinks %}
+                        {% url 'django-admindocs-docroot' as docsroot %}
+                        {% if docsroot %}
+                        <a class="nav-item nav-link" href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+                        {% endif %}
+                        {% endblock %}
+                        {% block nav-global %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row">
+            <div class="col-sm">
+            {% block breadcrumbs %}{% endblock %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Content -->
+        {% block navbar %}
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            {% block pretitle %}{% endblock %}
+            {% block content_title %}
+            {% if title %}
+            <a class="navbar-brand">{{ title|capfirst }}</a>
+            {% endif %}
+            {% endblock %}
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#toolsNavbarCollapse" aria-controls="navbarToggler2" aria-expanded="false" aria-label="Toggle Tools Navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="toolsNavbarCollapse" class="collapse navbar-collapse">
+                <div id="headerNavbarCollapse" class="collapse navbar-collapse"></div>
+                {% block object-tools %}{% endblock %}
+            </div>
+        </nav>
+        {% endblock navbar %}
+
+        {% block messages %}
+        {% if messages %}
+        <div class="row">
+            <div class="col">
+                {% for message in messages %}
+                <div class="alert {{ message.tags|default:"alert-info" }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endblock messages %}
+
+        {% block content %}{{ content }}{% endblock %}
+        {% block sidebar %}{% endblock %}
+        <!-- END Content -->
+
+        {% block footer %}<footer id="footer"></footer>{% endblock %}
+    </div>
+    <!-- END Container -->
+
+</body>
+</html>

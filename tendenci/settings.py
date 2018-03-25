@@ -131,7 +131,7 @@ def disable_template_cache():  # For use in site-specific settings.py
     TEMPLATES[0]['OPTIONS']['loaders'] = TEMPLATES[0]['OPTIONS']['loaders'][0][1]
 
 INSTALLED_APPS = [
-    'django_admin_bootstrapped',
+    'flat_responsive',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -145,7 +145,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
 
     'formtools',
-    'bootstrap3',
+    'bootstrap4',
     'dj_pagination',
     'tagging',
     'captcha',
@@ -636,21 +636,6 @@ NORECAPTCHA_WIDGET_TEMPLATE = 'base/nocaptcha_recaptcha/widget.html'
 
 
 # ---------------------------------------------------------------------------- #
-# Django Admin Bootstrapped
-# ---------------------------------------------------------------------------- #
-
-DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
-
-from django.contrib import messages  # noqa: E402
-MESSAGE_TAGS = {
-            messages.SUCCESS: 'alert-success success',
-            messages.INFO: 'alert-info info',
-            messages.WARNING: 'alert-warning warning',
-            messages.ERROR: 'alert-danger error'
-}
-
-
-# ---------------------------------------------------------------------------- #
 # Celery Task System
 # ---------------------------------------------------------------------------- #
 
@@ -706,3 +691,66 @@ except ImportError:
 
 EXPLORER_PERMISSION_VIEW = lambda u: u.is_superuser
 EXPLORER_PERMISSION_CHANGE = lambda u: u.is_superuser
+
+
+# ---------------------------------------------------------------------------- #
+# Bootstrap 4
+# ---------------------------------------------------------------------------- #
+
+# The URL to the jQuery JavaScript file
+JQUERY_URL = 'src="//code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"'
+
+# bootstrap4 default settings
+BOOTSTRAP4 = {
+
+    # The URL to the jQuery JavaScript file
+    'jquery_url': '//code.jquery.com/jquery.min.js',
+
+    # The Bootstrap base URL
+    'base_url': '//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/',
+
+    # The complete URL to the Bootstrap CSS file (None means derive it from base_url)
+    'css_url': None,
+
+    # The complete URL to the Bootstrap CSS file (None means no theme)
+    'theme_url': None,
+
+    # The complete URL to the Bootstrap JavaScript file (None means derive it from base_url)
+    'javascript_url': None,
+
+    # Put JavaScript in the HEAD section of the HTML document (only relevant if you use bootstrap4.html)
+    'javascript_in_head': False,
+
+    # Include jQuery with Bootstrap JavaScript (affects django-bootstrap4 template tags)
+    'include_jquery': False,
+
+    # Label class to use in horizontal forms
+    'horizontal_label_class': 'col-md-3',
+
+    # Field class to use in horizontal forms
+    'horizontal_field_class': 'col-md-9',
+
+    # Set placeholder attributes to label if no placeholder is provided
+    'set_placeholder': True,
+
+    # Class to indicate required (better to set this in your Django form)
+    'required_css_class': '',
+
+    # Class to indicate error (better to set this in your Django form)
+    'error_css_class': 'has-error',
+
+    # Class to indicate success, meaning the field has valid input (better to set this in your Django form)
+    'success_css_class': 'has-success',
+
+    # Renderers (only set these if you have studied the source and understand the inner workings)
+    'formset_renderers':{
+        'default': 'bootstrap4.renderers.FormsetRenderer',
+    },
+    'form_renderers': {
+        'default': 'bootstrap4.renderers.FormRenderer',
+    },
+    'field_renderers': {
+        'default': 'bootstrap4.renderers.FieldRenderer',
+        'inline': 'bootstrap4.renderers.InlineFieldRenderer',
+    },
+}

@@ -49,8 +49,10 @@ Whoosh==2.7.4
 simple-salesforce==0.68.1
 selenium==2.53.2
 raven==6.0.0
-django-admin-bootstrapped==2.5.7
-django-bootstrap3==9.1.0
+# django-admin-bootstrapped==2.5.7
+# django-bootstrap3==7.0.1
+django-flat-responsive==2.0
+django-bootstrap4==0.0.6
 django-app-namespace-template-loader==0.4
 django-annoying
 unidecode
@@ -65,3 +67,5 @@ django-markdown-deux
 xhtml2pdf
 python-magic
 XlsxWriter==0.9.6
+# ADH TODO - replace glyphicons from bootstrap3 with another icon set like FontAwesome5 for use with bootstrap4
+# ADH TODO - placed a copy of bootstrap4 in /www/tendenci/static/bootstrap4/ and a copy of FontAwesome5 in /www/tendenci/static/font-awesome (renamed orig directories to .old)
