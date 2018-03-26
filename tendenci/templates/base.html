@@ -34,11 +34,6 @@
         <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/">
         <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME|safe }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
 
-        {% block includebootstrap3css %}
-            {# Let's try using Bootstrap 3 in all sites #}
-            <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
-        {% endblock %}
-
         <link href="{% static 'css/websymbols.css' %}" rel="stylesheet" type="text/css">
 
         {% if SITE_GLOBAL_OVERRIDEBOOTSTRAPCSS %}
@@ -54,7 +49,12 @@
             <link href="{% static 'css/spectrum.css' %}" rel="stylesheet" type="text/css">
         {% endif %}
 
-        <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+        {# bootstrap4 #}
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+        {# fontawesome5 #}
+        <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" integrity="sha384-SlE991lGASHoBfWbelyBPLsUlwY1GwNDJo3jSJO04KZ33K2bwfV9YBauFfnzvynJ" crossorigin="anonymous"></script>
 
         <link href="{% static 'css/tendenci.css' %}" rel="stylesheet" type="text/css" media="screen">
         <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css">
@@ -91,7 +91,7 @@
         {% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
 
         {% block jquery_script %}
-            <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>">
         {% endblock jquery_script %}
 
         <script type="text/javascript">
@@ -104,8 +104,6 @@
                 jQuery('body').css('margin-top', jQuery('#t-admin-megamenu').outerHeight(true) + 'px' );
             });
         </script>
-
-        <script type="text/javascript" src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
 
         {% if request.user.is_superuser %}
             <script type="text/javascript" src="{% static 'js/admin_menu.js' %}"></script>
